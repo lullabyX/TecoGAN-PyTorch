@@ -7,7 +7,7 @@ import torch
 
 from data import create_dataloader
 from models import define_model
-from metrics import create_metric_calculator
+# from metrics import create_metric_calculator
 from utils import dist_utils, base_utils, data_utils
 
 
@@ -161,7 +161,7 @@ def test(opt):
             num_seq = len(test_dataset)
 
             # create metric calculator
-            metric_calculator = create_metric_calculator(opt)
+            # metric_calculator = create_metric_calculator(opt)
 
             # infer a sequence
             rank, world_size = dist_utils.get_dist_info()
