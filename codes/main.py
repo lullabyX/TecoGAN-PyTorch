@@ -47,7 +47,6 @@ def train(opt):
 
             # prepare data
             model.prepare_training_data(data)
-
             # train a mini-batch
             model.train()
 
@@ -67,66 +66,66 @@ def train(opt):
                 model.save(curr_iter)
 
             # evaluate model
-            if test_freq > 0 and curr_iter % test_freq == 0:
-                # set model index
-                model_idx = f'G_iter{curr_iter}'
+            # if test_freq > 0 and curr_iter % test_freq == 0:
+            #     # set model index
+            #     model_idx = f'G_iter{curr_iter}'
 
-                # for each testset
-                for dataset_idx in sorted(opt['dataset'].keys()):
-                    # select test dataset
-                    if 'test' not in dataset_idx: continue
+            #     # for each testset
+            #     for dataset_idx in sorted(opt['dataset'].keys()):
+            #         # select test dataset
+            #         if 'test' not in dataset_idx: continue
 
-                    ds_name = opt['dataset'][dataset_idx]['name']
-                    base_utils.log_info(f'Testing on {ds_name} dataset')
+            #         ds_name = opt['dataset'][dataset_idx]['name']
+            #         base_utils.log_info(f'Testing on {ds_name} dataset')
 
-                    # create data loader
-                    test_loader = create_dataloader(
-                        opt, phase='test', idx=dataset_idx)
-                    test_dataset = test_loader.dataset
-                    num_seq = len(test_dataset)
+            #         # create data loader
+            #         test_loader = create_dataloader(
+            #             opt, phase='test', idx=dataset_idx)
+            #         test_dataset = test_loader.dataset
+            #         num_seq = len(test_dataset)
 
-                    # create metric calculator
-                    metric_calculator = create_metric_calculator(opt)
+            #         # create metric calculator
+            #         metric_calculator = create_metric_calculator(opt)
 
-                    # infer a sequence
-                    rank, world_size = dist_utils.get_dist_info()
-                    for idx in range(rank, num_seq, world_size):
-                        # fetch data
-                        data = test_dataset[idx]
+            #         # infer a sequence
+            #         rank, world_size = dist_utils.get_dist_info()
+            #         for idx in range(rank, num_seq, world_size):
+            #             # fetch data
+            #             data = test_dataset[idx]
 
-                        # prepare data
-                        model.prepare_inference_data(data)
+            #             # prepare data
+            #             model.prepare_inference_data(data)
 
-                        # infer
-                        hr_seq = model.infer()
+            #             # infer
+            #             hr_seq = model.infer()
 
-                        # save hr results
-                        if opt['test']['save_res']:
-                            res_dir = osp.join(
-                                opt['test']['res_dir'], ds_name, model_idx)
-                            res_seq_dir = osp.join(res_dir, data['seq_idx'])
-                            data_utils.save_sequence(
-                                res_seq_dir, hr_seq, data['frm_idx'], to_bgr=True)
+            #             # save hr results
+            #             if opt['test']['save_res']:
+            #                 res_dir = osp.join(
+            #                     opt['test']['res_dir'], ds_name, model_idx)
+            #                 res_seq_dir = osp.join(res_dir, data['seq_idx'])
+            #                 data_utils.save_sequence(
+            #                     res_seq_dir, hr_seq, data['frm_idx'], to_bgr=True)
 
-                        # compute metrics for the current sequence
-                        if metric_calculator is not None:
-                            gt_seq = data['gt'].numpy()
-                            metric_calculator.compute_sequence_metrics(
-                                data['seq_idx'], gt_seq, hr_seq)
+            #             # compute metrics for the current sequence
+            #             if metric_calculator is not None:
+            #                 gt_seq = data['gt'].numpy()
+            #                 metric_calculator.compute_sequence_metrics(
+            #                     data['seq_idx'], gt_seq, hr_seq)
 
-                    # save/print results
-                    if metric_calculator is not None:
-                        seq_idx_lst = [data['seq_idx'] for data in test_dataset]
-                        metric_calculator.gather(seq_idx_lst)
+            #         # save/print results
+            #         if metric_calculator is not None:
+            #             seq_idx_lst = [data['seq_idx'] for data in test_dataset]
+            #             metric_calculator.gather(seq_idx_lst)
 
-                        if opt['test'].get('save_json'):
-                            # write results to a json file
-                            json_path = osp.join(
-                                opt['test']['json_dir'], f'{ds_name}_avg.json')
-                            metric_calculator.save(model_idx, json_path, override=True)
-                        else:
-                            # print directly
-                            metric_calculator.display()
+            #             if opt['test'].get('save_json'):
+            #                 # write results to a json file
+            #                 json_path = osp.join(
+            #                     opt['test']['json_dir'], f'{ds_name}_avg.json')
+            #                 metric_calculator.save(model_idx, json_path, override=True)
+            #             else:
+            #                 # print directly
+            #                 metric_calculator.display()
 
 
 def test(opt):

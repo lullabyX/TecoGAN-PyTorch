@@ -45,44 +45,45 @@ class BaseModel():
             for BD degradation, generate lr data and remove the border of gt data
             for BI degradation, use input data directly
         """
+        self.gt_data = data['gt'].to(self.device)
+        self.lr_data = data['lr'].to(self.device)
+        # degradation_type = self.opt['dataset']['degradation']['type']
 
-        degradation_type = self.opt['dataset']['degradation']['type']
+        # if degradation_type == 'BI':
+        #     self.gt_data = data['gt'].to(self.device)
+        #     self.lr_data = data['lr'].to(self.device)
 
-        if degradation_type == 'BI':
-            self.gt_data = data['gt'].to(self.device)
-            self.lr_data = data['lr'].to(self.device)
+        # elif degradation_type == 'BD':
+        #     # generate lr data on the fly (on gpu)
 
-        elif degradation_type == 'BD':
-            # generate lr data on the fly (on gpu)
+        #     # set params
+        #     scale = self.opt['scale']
+        #     sigma = self.opt['dataset']['degradation'].get('sigma', 1.5)
+        #     border_size = int(sigma * 3.0)
 
-            # set params
-            scale = self.opt['scale']
-            sigma = self.opt['dataset']['degradation'].get('sigma', 1.5)
-            border_size = int(sigma * 3.0)
+        #     gt_data = data['gt'].to(self.device)  # with border
+        #     n, t, c, gt_h, gt_w = gt_data.size()
+        #     lr_h = (gt_h - 2*border_size)//scale
+        #     lr_w = (gt_w - 2*border_size)//scale
 
-            gt_data = data['gt'].to(self.device)  # with border
-            n, t, c, gt_h, gt_w = gt_data.size()
-            lr_h = (gt_h - 2*border_size)//scale
-            lr_w = (gt_w - 2*border_size)//scale
+        #     # create blurring kernel
+        #     if self.blur_kernel is None:
+        #         self.blur_kernel = create_kernel(sigma).to(self.device)
+        #     blur_kernel = self.blur_kernel
 
-            # create blurring kernel
-            if self.blur_kernel is None:
-                self.blur_kernel = create_kernel(sigma).to(self.device)
-            blur_kernel = self.blur_kernel
+        #     # generate lr data
+        #     gt_data = gt_data.view(n*t, c, gt_h, gt_w)
+        #     lr_data = downsample_bd(gt_data, blur_kernel, scale, pad_data=False)
+        #     lr_data = lr_data.view(n, t, c, lr_h, lr_w)
 
-            # generate lr data
-            gt_data = gt_data.view(n*t, c, gt_h, gt_w)
-            lr_data = downsample_bd(gt_data, blur_kernel, scale, pad_data=False)
-            lr_data = lr_data.view(n, t, c, lr_h, lr_w)
+        #     # remove gt border
+        #     gt_data = gt_data[
+        #         ...,
+        #         border_size: border_size + scale*lr_h,
+        #         border_size: border_size + scale*lr_w]
+        #     gt_data = gt_data.view(n, t, c, scale*lr_h, scale*lr_w)
 
-            # remove gt border
-            gt_data = gt_data[
-                ...,
-                border_size: border_size + scale*lr_h,
-                border_size: border_size + scale*lr_w]
-            gt_data = gt_data.view(n, t, c, scale*lr_h, scale*lr_w)
-
-            self.gt_data, self.lr_data = gt_data, lr_data  # tchw|float32
+        #     self.gt_data, self.lr_data = gt_data, lr_data  # tchw|float32
 
     def prepare_inference_data(self, data):
         """ Prepare lr data for training (w/o loading on device)
