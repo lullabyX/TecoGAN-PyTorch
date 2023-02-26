@@ -16,7 +16,7 @@ dataset:
     data_type: rgb
     crop_size: 128
     gt_crop_size: 128
-    batch_size_per_gpu: 2
+    batch_size_per_gpu: 32
     num_worker_per_gpu: 3
     pin_memory: true
 
@@ -50,7 +50,7 @@ model:
 
 # training configs
 train:
-  tempo_extent: 10
+  tempo_extent: 50
 
   start_iter: 0
   total_iter: 500000
