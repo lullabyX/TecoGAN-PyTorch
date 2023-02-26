@@ -11,10 +11,11 @@ dataset:
 
   train:
     name: REDS
-    seq_dir: data/REDS/GT.lmdb
+    seq_dir: test_A
     filter_file: data/meta/REDS/train_list.txt
     data_type: rgb
-    crop_size: 1
+    crop_size: 128
+    gt_crop_size: 128
     batch_size_per_gpu: 2
     num_worker_per_gpu: 3
     pin_memory: true
@@ -35,7 +36,7 @@ model:
     name: FRNet # frame-recurrent network
     in_nc: 3
     out_nc: 3
-    nf: 50
+    nf: 64
     nb: 1
 
     load_path: ~

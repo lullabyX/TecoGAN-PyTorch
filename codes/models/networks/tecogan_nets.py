@@ -141,9 +141,9 @@ class SRNet(nn.Module):
 
         out = self.conv_in(torch.cat([lr_curr, hr_prev_tran], dim=1))
         out = self.resblocks(out)
-        out = self.conv_up(out)
+        # out = self.conv_up(out)
         out = self.conv_out(out)
-        # out += self.upsample_func(lr_curr)
+        out += self.upsample_func(lr_curr)
 
         return out
 
@@ -187,7 +187,7 @@ class FRNet(BaseSequenceGenerator):
         lr_flow = self.fnet(lr_curr, lr_prev)  # n*(t-1),2,h,w
 
         # upsample lr flows
-        hr_flow = 2 * self.upsample_func(lr_flow)
+        hr_flow = self.scale * self.upsample_func(lr_flow)
         # hr_flow = lr_flow
         hr_flow = hr_flow.view(n, (t - 1), 2, hr_h, hr_w)
 

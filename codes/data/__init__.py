@@ -91,7 +91,7 @@ def create_dataloader(opt, phase, idx):
 
     # else:
     #     raise ValueError(f'Unrecognized phase: {phase}')
-    data_opt = {"gt_seq_dir": './train_B', 'lr_seq_dir': './train_A'}
+    data_opt = {"gt_seq_dir": './A', 'lr_seq_dir': './B'}
     loader = DataLoader(
         dataset=PairedFolderDataset(data_opt),
         batch_size=2,
