@@ -19,7 +19,7 @@ def parse_agrs():
                         help='which mode to use (train|test|profile)')
     parser.add_argument('--opt', type=str, required=True,
                         help='path to the config yaml file')
-    parser.add_argument('--gpu_ids', type=str, default='-1',
+    parser.add_argument('--gpu_ids', type=str, default='0',
                         help='GPU index (set -1 to use CPU)')
     parser.add_argument('--lr_size', type=str, default='3x256x256',
                         help='size of the input frame')

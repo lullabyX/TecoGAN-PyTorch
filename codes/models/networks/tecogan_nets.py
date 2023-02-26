@@ -4,11 +4,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-from .base_nets import BaseSequenceGenerator, BaseSequenceDiscriminator
-from utils.net_utils import space_to_depth, backward_warp, get_upsampling_func
-from utils.net_utils import initialize_weights
 from utils.data_utils import float32_to_uint8
+from utils.net_utils import (backward_warp, get_upsampling_func,
+                             initialize_weights, space_to_depth)
+
+from .base_nets import BaseSequenceDiscriminator, BaseSequenceGenerator
+
 # from metrics.model_summary import register, parse_model_info
 
 
@@ -72,11 +73,11 @@ class FNet(nn.Module):
         out = self.encoder2(out)
         out = self.encoder3(out)
         out = F.interpolate(
-            self.decoder1(out), scale_factor=2, mode='bilinear', align_corners=False)
+            self.decoder1(out), scale_factor=1, mode='bilinear', align_corners=False)
         out = F.interpolate(
-            self.decoder2(out), scale_factor=2, mode='bilinear', align_corners=False)
+            self.decoder2(out), scale_factor=1, mode='bilinear', align_corners=False)
         out = F.interpolate(
-            self.decoder3(out), scale_factor=2, mode='bilinear', align_corners=False)
+            self.decoder3(out), scale_factor=1, mode='bilinear', align_corners=False)
         out = torch.tanh(self.flow(out)) * 24  # 24 is the max velocity
 
         return out
@@ -142,7 +143,7 @@ class SRNet(nn.Module):
         out = self.resblocks(out)
         out = self.conv_up(out)
         out = self.conv_out(out)
-        out += self.upsample_func(lr_curr)
+        # out += self.upsample_func(lr_curr)
 
         return out
 
@@ -186,8 +187,10 @@ class FRNet(BaseSequenceGenerator):
         lr_flow = self.fnet(lr_curr, lr_prev)  # n*(t-1),2,h,w
 
         # upsample lr flows
-        hr_flow = self.scale * self.upsample_func(lr_flow)
+        hr_flow = 2 * self.upsample_func(lr_flow)
+        # hr_flow = lr_flow
         hr_flow = hr_flow.view(n, (t - 1), 2, hr_h, hr_w)
+
 
         # compute the first hr data
         hr_data = []
@@ -312,7 +315,7 @@ class FRNet(BaseSequenceGenerator):
         # gflops_dict['SRNet'], params_dict['SRNet'] = parse_model_info(self.srnet)
 
         # return gflops_dict, params_dict
-        return None, None
+        return None,
 
 
 # ====================== discriminator modules ====================== #

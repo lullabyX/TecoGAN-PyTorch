@@ -1,8 +1,7 @@
 # basic configs
-scale: 2
+scale: 1
 manual_seed: 0
 verbose: true
-
 
 # dataset configs
 dataset:
@@ -24,31 +23,29 @@ dataset:
     name: REDS
     gt_seq_dir: data/REDS/Raw
     lr_seq_dir: ~
-    filter_list: ['000', '011', '015', '020']
+    filter_list: ["000", "011", "015", "020"]
     num_worker_per_gpu: 4
     pin_memory: true
-
 
 # model configs
 model:
   name: TecoGAN
 
   generator:
-    name: FRNet  # frame-recurrent network
+    name: FRNet # frame-recurrent network
     in_nc: 3
     out_nc: 3
-    nf: 64
-    nb: 10
+    nf: 50
+    nb: 1
 
     load_path: ~
 
   discriminator:
-    name: STNet  # spatio-temporal network
+    name: STNet # spatio-temporal network
     in_nc: 3
     tempo_range: 3
 
     load_path: ~
-
 
 # training configs
 train:
@@ -105,8 +102,7 @@ train:
     weight: 0.01
     reduction: mean
 
-  ckpt_dir: './'
-
+  ckpt_dir: "./"
 
 # validation configs
 test:
@@ -114,15 +110,14 @@ test:
 
   # whether to save the generated SR results
   save_res: false
-  res_dir: ~   # use default dir
+  res_dir: ~ # use default dir
 
   # whether to save the test results in a json file
   save_json: true
-  json_dir: ~  # use default dir
+  json_dir: ~ # use default dir
 
   padding_mode: reflect
   num_pad_front: 5
-
 
 # metric configs
 metric:
@@ -138,7 +133,6 @@ metric:
 
   tOF:
     colorspace: y
-
 
 # logger configs
 logger:

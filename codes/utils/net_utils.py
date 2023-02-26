@@ -82,7 +82,7 @@ def backward_warp(x, flow, mode='bilinear', padding_mode='border'):
     return output
 
 
-def get_upsampling_func(scale=4, degradation='BI'):
+def get_upsampling_func(scale=1, degradation='BI'):
     if degradation == 'BI':
         upsample_func = functools.partial(
             F.interpolate, scale_factor=scale, mode='bilinear',

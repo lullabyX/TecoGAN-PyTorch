@@ -40,13 +40,15 @@ class PairedFolderDataset(BaseDataset):
         gt_seq = []
         for frm_path in retrieve_files(osp.join(self.gt_seq_dir, key)):
             frm = cv2.imread(frm_path)[..., ::-1]
+            frm = cv2.resize(frm, (32, 32), interpolation=cv2.INTER_AREA).transpose(2, 0, 1)  
             gt_seq.append(frm)
         gt_seq = np.stack(gt_seq)  # thwc|rgb|uint8
 
         # load lr frames
         lr_seq = []
         for frm_path in retrieve_files(osp.join(self.lr_seq_dir, key)):
-            frm = cv2.imread(frm_path)[..., ::-1].astype(np.float32) / 255.0
+            frm = cv2.imread(frm_path)[..., ::-1]
+            frm = cv2.resize(frm, (32, 32), interpolation=cv2.INTER_AREA).transpose(2, 0, 1)  .astype(np.float32) / 255.0
             lr_seq.append(frm)
         lr_seq = np.stack(lr_seq)  # thwc|rgb|float32
 
