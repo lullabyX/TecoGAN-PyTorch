@@ -57,24 +57,24 @@ class PairedFolderDataset(BaseDataset):
         # load gt frames
         gt_seq = []
         for frm_path in retrieve_files(osp.join(self.gt_seq_dir, key)):
-            frm = cv2.imread(frm_path)[..., ::-1]
+            frm = cv2.imread(frm_path)
             if config.center_crop == 'yes':
                  frm = center_crop(frm, (128, 128))
             else:     
                 frm = cv2.resize(frm, (128, 128), interpolation=cv2.INTER_AREA)
-            frm = frm.transpose(2, 0, 1).astype(np.float32) / 255.0
+            frm = frm[..., ::-1].transpose(2, 0, 1).astype(np.float32) / 255.0
             gt_seq.append(frm)
         gt_seq = np.stack(gt_seq)  # thwc|rgb|uint8
 
         # load lr frames
         lr_seq = []
         for frm_path in retrieve_files(osp.join(self.lr_seq_dir, key)):
-            frm = cv2.imread(frm_path)[..., ::-1]
+            frm = cv2.imread(frm_path)
             if config.center_crop == 'yes':
                  frm = center_crop(frm, (128, 128))
             else:     
                 frm = cv2.resize(frm, (128, 128), interpolation=cv2.INTER_AREA)
-            frm = frm.transpose(2, 0, 1).astype(np.float32) / 255.0
+            frm = frm[..., ::-1].transpose(2, 0, 1).astype(np.float32) / 255.0
             lr_seq.append(frm)
         lr_seq = np.stack(lr_seq)  # thwc|rgb|float32
 
