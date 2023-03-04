@@ -7,6 +7,8 @@ import torch.nn.functional as F
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel
 
+import config
+
 from utils.data_utils import create_kernel, downsample_bd
 from utils.dist_utils import master_only
 
@@ -22,7 +24,7 @@ class BaseModel():
 
         if self.is_train:
             self.lr_data, self.gt_data = None, None
-            self.ckpt_dir = opt['train']['ckpt_dir']
+            self.ckpt_dir = config.save_weight_dir
             self.log_decay = opt['logger'].get('decay', 0.99)
             self.log_dict = OrderedDict()
             self.running_log_dict = OrderedDict()
@@ -214,7 +216,7 @@ class BaseModel():
     @master_only
     def save_network(self, net, net_label, current_iter):
         filename = f'{net_label}_iter{current_iter}.pth'
-        save_path = osp.join(self.ckpt_dir, filename)
+        save_path = osp.join(config.save_weight_dir, filename)
         net = self.get_bare_model(net)
         torch.save(net.state_dict(), save_path)
 

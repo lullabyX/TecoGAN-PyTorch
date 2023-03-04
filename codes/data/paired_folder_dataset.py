@@ -8,6 +8,24 @@ import torch
 from .base_dataset import BaseDataset
 from utils.base_utils import retrieve_files
 
+import config
+
+
+def center_crop(img, dim=(128,128)):
+	"""Returns center cropped image
+	Args:
+	img: image to be center cropped
+	dim: dimensions (width, height) to be cropped
+	"""
+	width, height = img.shape[1], img.shape[0]
+
+	# process crop width and height for max available dimension
+	crop_width = dim[0] if dim[0]<img.shape[1] else img.shape[1]
+	crop_height = dim[1] if dim[1]<img.shape[0] else img.shape[0] 
+	mid_x, mid_y = int(width/2), int(height/2)
+	cw2, ch2 = int(crop_width/2), int(crop_height/2) 
+	crop_img = img[mid_y-ch2:mid_y+ch2, mid_x-cw2:mid_x+cw2]
+	return crop_img
 
 class PairedFolderDataset(BaseDataset):
     """ Folder dataset for paired data. It supports both BI & BD degradation.
@@ -40,7 +58,11 @@ class PairedFolderDataset(BaseDataset):
         gt_seq = []
         for frm_path in retrieve_files(osp.join(self.gt_seq_dir, key)):
             frm = cv2.imread(frm_path)[..., ::-1]
-            frm = cv2.resize(frm, (32, 32), interpolation=cv2.INTER_AREA).transpose(2, 0, 1).astype(np.float32) / 255.0
+            if config.center_crop == 'yes':
+                 frm = center_crop(frm, (128, 128))
+            else:     
+                frm = cv2.resize(frm, (128, 128), interpolation=cv2.INTER_AREA)
+            frm = frm.transpose(2, 0, 1).astype(np.float32) / 255.0
             gt_seq.append(frm)
         gt_seq = np.stack(gt_seq)  # thwc|rgb|uint8
 
@@ -48,7 +70,11 @@ class PairedFolderDataset(BaseDataset):
         lr_seq = []
         for frm_path in retrieve_files(osp.join(self.lr_seq_dir, key)):
             frm = cv2.imread(frm_path)[..., ::-1]
-            frm = cv2.resize(frm, (32, 32), interpolation=cv2.INTER_AREA).transpose(2, 0, 1).astype(np.float32) / 255.0
+            if config.center_crop == 'yes':
+                 frm = center_crop(frm, (128, 128))
+            else:     
+                frm = cv2.resize(frm, (128, 128), interpolation=cv2.INTER_AREA)
+            frm = frm.transpose(2, 0, 1).astype(np.float32) / 255.0
             lr_seq.append(frm)
         lr_seq = np.stack(lr_seq)  # thwc|rgb|float32
 

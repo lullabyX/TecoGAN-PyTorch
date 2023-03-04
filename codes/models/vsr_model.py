@@ -7,6 +7,10 @@ from .base_model import BaseModel
 from .networks import define_generator
 from .optim import define_criterion, define_lr_schedule
 from utils import base_utils, net_utils, data_utils
+from torchvision.utils import make_grid, save_image
+
+import os
+import config
 
 
 class VSRModel(BaseModel):
@@ -114,3 +118,6 @@ class VSRModel(BaseModel):
 
     def save(self, current_iter):
         self.save_network(self.net_G, 'G', current_iter)
+        save_image(make_grid(self.hr_data, nrow=8), os.path.join(config.save_image_dir, f'{current_iter}@Generated.jpg'))
+        save_image(make_grid(self.lr_data, nrow=8), os.path.join(config.save_image_dir, f'{current_iter}@Noisy.jpg'))
+        save_image(make_grid(self.gt_data, nrow=8), os.path.join(config.save_image_dir, f'{current_iter}@Clean.jpg'))
